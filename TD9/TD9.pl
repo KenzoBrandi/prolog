@@ -35,22 +35,25 @@ rougeXY(X,Y) :- N is (Y*19) + X,
 blancXY(X,Y) :- N is (Y*19) + X,
     gr_rect_couleur(N,white).
 
+dessine_chemin([]).
+dessine_chemin([[X,Y]|Q]):-laby(X,Y,0),
+               N is (Y*19) + X,
+               gr_rect_couleur(N,yellow),
+               dessine_chemin(Q) .
+dessine_chemin([[X,Y]|Q]):- laby(X,Y,R),
+               R \== 0,
+               dessine_chemin(Q).
 
-solutions(X,Y) :-
-    laby(X,Y,R),
-    R \== 1,
-    R \== 3,
-    avanceDe(X,Y,[[X,Y]]).
+avanceDe(X,Y,_) :- sleep(0.01),laby(X,Y,0), rougeXY(X,Y),fail.
 
-avanceDe(X,Y,_) :- sleep(0.01), rougeXY(X,Y),fail.
-
-avanceDe( X, Y, Listeariane) :-laby(X,Y, 3),sleep(0.5),fail.
+avanceDe( X, Y, Listeariane) :-laby(X,Y, 3),dessine_chemin(Listeariane),sleep(0.5),fail.
 
 avanceDe(X,Y, ListeAriane) :-
     laby(X,Y,R),
     R \== 1,
-    R \== 3,
     Y1 is Y - 1,
+    laby(X,Y1,R1),
+    R1 \== 1,
     \+ member([X,Y1],ListeAriane),
     avanceDe(X,Y1,[[X,Y1] |ListeAriane]).
 
@@ -58,30 +61,37 @@ avanceDe(X,Y, ListeAriane) :-
 avanceDe(X,Y, ListeAriane) :-
     laby(X,Y,R),
     R \== 1,
-    R \== 3,
     X1 is X - 1,
+    laby(X1,Y,R1),
+    R1 \== 1,
     \+ member([X1,Y],ListeAriane),
     avanceDe(X1,Y, [[X1,Y] |ListeAriane]).
 
 avanceDe(X,Y, ListeAriane) :-
     laby(X,Y,R),
     R \== 1,
-    R \== 3,
-
     X1 is X + 1,
+    laby(X1,Y,R1),
+    R1 \== 1,
     \+ member([X1,Y],ListeAriane),
     avanceDe(X1,Y, [[X1,Y] |ListeAriane]).
 
 avanceDe(X,Y, ListeAriane) :-
     laby(X,Y,R),
     R \== 1,
-    R \== 3,
     Y1 is Y + 1,
+    laby(X,Y1,R1),
+    R1 \== 1,
     \+ member([X,Y1],ListeAriane),
     avanceDe(X,Y1, [[X,Y1] |ListeAriane]).
 
 avanceDe(X,Y,_) :-laby(X,Y,0), blancXY(X,Y), fail.
-avanceDe(X,Y,_) :-laby(X,Y,1), noirXY(X,Y), fail.
+
+
+
+
+
+
 
 
 
